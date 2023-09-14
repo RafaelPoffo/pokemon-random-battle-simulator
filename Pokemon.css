@@ -1,0 +1,70 @@
+/* Estilos gerais da interface de batalha */
+.battle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    background-color: #e0e0e0;
+    padding: 20px;
+}
+
+/* Estilo para cada Pokémon (pkm1 e pkm2) */
+.pkm1 {
+    background-color: #ffffff;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    margin-top: 250px;
+    margin: 0; /* Adicione esta linha */
+}
+
+.pkm2 {
+    background-color: #fff;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 250px;
+}
+
+/* Espaço entre os Pokémon */
+.spacer {
+    width: 20px;
+}
+
+/* Estilo para as informações do Pokémon */
+.info {
+    margin-bottom: 10px;
+}
+
+/* Estilo para os nomes dos Pokémon */
+.namepkm {
+    font-weight: bold;
+}
+
+/* Estilo para as imagens dos Pokémon */
+
+
+/* Estilo para os botões de ataque */
+.actions button.btn {
+    width: 100px;
+    height: 30px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+/* Estilização dos botões quando hover */
+.actions button.btn:hover {
+    background-color: #45a049;
+}
+
+.commenttext {
+    background-color: rgb(162, 162, 194);
+    max-height: 100px; /* Defina a altura máxima desejada */
+    overflow-y: auto; /* Adicione uma barra de rolagem vertical se necessário */
+    border-radius: 15px;
+}

@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="Pokemon.css">
+    <link rel="icon" href="./images/pokeball.png" type="image/png">
+    <title>Pokemon Battle</title>
+
+</head>
+<body>
+    <div class="battle-container">
+        <!-- Pokémon 2 (pkm2) -->
+        <div class="pkm1">
+            <div class="info">
+                <div id="name1" class="namepkm"></div>
+                <div id="hp1"></div>
+            </div>
+            <div id="pk1" class="pokemon-image"></div>
+            <div class="actions">
+                <input type="button" class="btn" id="m0" value="Move 1"> <!-- Botões para os movimentos -->
+                <input type="button" class="btn" id="m1" value="Move 2">
+                <input type="button" class="btn" id="m2" value="Move 3">
+                <input type="button" class="btn" id="m3" value="Move 4">
+            </div>
+        </div>
+        
+        <div class="spacer"></div> <!-- Espaço entre os Pokémon -->
+        
+        <table class="commenttext">
+            <tr>
+                <td colspan="2" id="comment"></td>
+            </tr>
+        </table>
+
+        <!-- Pokémon 1 (pkm1) -->
+        <div class="pkm2">
+            <tr>
+            <div id="name2" class="namepkm"></div>
+            <div id="hp2"></div>
+            <div id="pk2" class="pokemon-image"></div>
+            </tr>
+        </div>
+    </div>
+
+
+    <script>
+        // Definição da classe Pokémon para representar os Pokémon
+        class Pokemon {
+            constructor(name, sprite, hp, moves) {
+                this.name = name; // Nome do Pokémon
+                this.sprite = sprite; // URL da imagem do Pokémon
+                this.hp = hp; // Pontos de Vida do Pokémon
+                this.fullhp = hp; // Pontos de Vida máximo do Pokémon
+                this.moves = moves; // Lista de movimentos do Pokémon
+            }
+        }
+
+        // Lista de Pokémon disponíveis para batalha
+        let pkmList = [
+            ['Charizard', 'https://img.pokemondb.net/sprites/black-white/normal/charizard.png', 360, [
+                ['Flamethrower', 'fire', 95, 0.95],
+                ['Dragon Claw', 'dragon', 100, 0.95],
+                ['Air slash', 'fly', 75, 0.85],
+                ['Slash', 'normal', 70]
+            ]],
+            ['Blastoise', 'https://img.pokemondb.net/sprites/black-white/normal/blastoise.png', 362, [
+                ['Surf', 'water', 90, 0.95],
+                ['Crunch', 'normal', 80, 0.95],
+                ['Ice punch', 'ice', 75, 0.95],
+                ['Flash cannon', 'steel', 80, 0.95]
+            ]],
+            ['Venusaur', 'https://img.pokemondb.net/sprites/black-white/normal/venusaur-f.png', 364, [
+                ['Petal Blizzard', 'grass', 90, 0.95],
+                ['Sludge bomb', 'poison', 90, 0.95],
+                ['Earthquake', 'ground', 100, 0.95],
+                ['Body Slam', 'normal', 85, 0.95]
+            ]]
+            ['Butterfree', 'https://img.pokemondb.net/sprites/black-white/normal/butterfree.png', 395, [
+        ['Bug Buzz', 'bug', 90, 0.95],
+        ['Air Slash', 'flying', 75, 0.95],
+        ['Giga Drain', 'grass', 75, 0.95],
+        ['Sleep Powder', 'grass', 0, 0.75]
+    ]],
+    ['Beedrill', 'https://img.pokemondb.net/sprites/black-white/normal/beedrill.png', 385, [
+        ['Poison Jab', 'poison', 80, 0.95],
+        ['Twineedle', 'bug', 25, 1],
+        ['Brick Break', 'fighting', 75, 1],
+        ['X-Scissor', 'bug', 80, 0.95]
+    ]],
+    ['Pidgeot', 'https://img.pokemondb.net/sprites/black-white/normal/pidgeot.png', 479, [
+        ['Aerial Ace', 'flying', 60, 1],
+        ['Hurricane', 'flying', 110, 0.7],
+        ['Roost', 'flying', 0, 1],
+        ['Heat Wave', 'fire', 95, 0.9]
+    ]],
+    ['Raticate', 'https://img.pokemondb.net/sprites/black-white/normal/raticate.png', 413, [
+        ['Hyper Fang', 'normal', 80, 0.9],
+        ['Sucker Punch', 'dark', 70, 1],
+        ['Double-Edge', 'normal', 120, 1],
+        ['Quick Attack', 'normal', 40, 1]
+    ]],
+    ['Fearow', 'https://img.pokemondb.net/sprites/black-white/normal/fearow.png', 442, [
+        ['Drill Peck', 'flying', 80, 1],
+        ['Aerial Ace', 'flying', 60, 1],
+        ['Fury Attack', 'normal', 15, 0.85],
+        ['Steel Wing', 'steel', 70, 0.9]
+    ]],
+    ['Arbok', 'https://img.pokemondb.net/sprites/black-white/normal/arbok.png', 448, [
+        ['Poison Jab', 'poison', 80, 0.95],
+        ['Earthquake', 'ground', 100, 1],
+        ['Crunch', 'dark', 80, 0.95],
+        ['Giga Drain', 'grass', 75, 0.95]
+    ]],
+    ['Pikachu', 'https://img.pokemondb.net/sprites/black-white/normal/pikachu.png', 320, [
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Quick Attack', 'normal', 40, 1],
+        ['Iron Tail', 'steel', 100, 0.75],
+        ['Volt Tackle', 'electric', 120, 0.85]
+    ]],
+    ['Raichu', 'https://img.pokemondb.net/sprites/black-white/normal/raichu.png', 485, [
+        ['Thunder Punch', 'electric', 75, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Focus Blast', 'fighting', 120, 0.7],
+        ['Surf', 'water', 90, 1]
+    ]],
+    ['Sandslash', 'https://img.pokemondb.net/sprites/black-white/normal/sandslash.png', 450, [
+        ['Earthquake', 'ground', 100, 1],
+        ['Rock Slide', 'rock', 75, 0.9],
+        ['Slash', 'normal', 70, 1],
+        ['Sand Attack', 'ground', 0, 1]
+    ]],
+    ['Nidoqueen', 'https://img.pokemondb.net/sprites/black-white/normal/nidoqueen.png', 505, [
+        ['Earthquake', 'ground', 100, 1],
+        ['Body Slam', 'normal', 85, 1],
+        ['Poison Jab', 'poison', 80, 1],
+        ['Superpower', 'fighting', 120, 0.9]
+    ]],
+    ['Nidoking', 'https://img.pokemondb.net/sprites/black-white/normal/nidoking.png', 505, [
+        ['Earthquake', 'ground', 100, 1],
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Megahorn', 'bug', 120, 0.85]
+    ]],
+    ['Clefable', 'https://img.pokemondb.net/sprites/black-white/normal/clefable.png', 483, [
+        ['Moonblast', 'fairy', 95, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Flamethrower', 'fire', 95, 1]
+    ]],
+    ['Ninetales', 'https://img.pokemondb.net/sprites/black-white/normal/ninetales.png', 505, [
+        ['Fire Blast', 'fire', 110, 0.85],
+        ['Extrasensory', 'psychic', 80, 1],
+        ['Will-O-Wisp', 'fire', 0, 0.85],
+        ['Dark Pulse', 'dark', 80, 1]
+    ]],
+    ['Wigglytuff', 'https://img.pokemondb.net/sprites/black-white/normal/wigglytuff.png', 435, [
+        ['Hyper Voice', 'normal', 90, 1],
+        ['Dazzling Gleam', 'fairy', 80, 1],
+        ['Play Rough', 'fairy', 90, 0.9],
+        ['Fire Blast', 'fire', 110, 0.85]
+    ]],
+    ['Golbat', 'https://img.pokemondb.net/sprites/black-white/normal/golbat.png', 455, [
+        ['Air Slash', 'flying', 75, 0.95],
+        ['Poison Fang', 'poison', 50, 1],
+        ['Shadow Ball', 'ghost', 80, 1],
+        ['Sludge Bomb', 'poison', 90, 1]
+    ]],
+    ['Vileplume', 'https://img.pokemondb.net/sprites/black-white/normal/vileplume.png', 490, [
+        ['Petal Blizzard', 'grass', 90, 0.95],
+        ['Sludge Bomb', 'poison', 90, 1],
+        ['Moonblast', 'fairy', 95, 1],
+        ['Giga Drain', 'grass', 75, 0.95]
+    ]],
+    ['Parasect', 'https://img.pokemondb.net/sprites/black-white/normal/parasect.png', 405, [
+        ['X-Scissor', 'bug', 80, 1],
+        ['Spore', 'grass', 0, 0.75],
+        ['Leer', 'normal', 0, 1],
+        ['Leech Life', 'bug', 80, 1]
+    ]],
+    ['Venomoth', 'https://img.pokemondb.net/sprites/black-white/normal/venomoth.png', 450, [
+        ['Bug Buzz', 'bug', 90, 0.95],
+        ['Psychic', 'psychic', 90, 1],
+        ['Giga Drain', 'grass', 75, 0.95],
+        ['Sleep Powder', 'grass', 0, 0.75]
+    ]],
+    ['Persian', 'https://img.pokemondb.net/sprites/black-white/normal/persian.png', 440, [
+        ['Play Rough', 'fairy', 90, 0.9],
+        ['Night Slash', 'dark', 70, 1],
+        ['Power Gem', 'rock', 80, 1],
+        ['Quick Attack', 'normal', 40, 1]
+    ]],
+    ['Dugtrio', 'https://img.pokemondb.net/sprites/black-white/normal/dugtrio.png', 405, [
+        ['Earthquake', 'ground', 100, 1],
+        ['Stone Edge', 'rock', 100, 0.8],
+        ['Sucker Punch', 'dark', 70, 1],
+        ['Slash', 'normal', 70, 1]
+    ]],
+    ['Golduck', 'https://img.pokemondb.net/sprites/black-white/normal/golduck.png', 500, [
+        ['Surf', 'water', 90, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Aqua Jet', 'water', 40, 1]
+    ]],
+    ['Primeape', 'https://img.pokemondb.net/sprites/black-white/normal/primeape.png', 455, [
+        ['Close Combat', 'fighting', 120, 1],
+        ['Cross Chop', 'fighting', 100, 0.8],
+        ['Earthquake', 'ground', 100, 1],
+        ['Punishment', 'dark', 60, 1]
+    ]],
+    ['Arcanine', 'https://img.pokemondb.net/sprites/black-white/normal/arcanine.png', 555, [
+        ['Flare Blitz', 'fire', 120, 0.85],
+        ['Extreme Speed', 'normal', 80, 1],
+        ['Wild Charge', 'electric', 90, 1],
+        ['Outrage', 'dragon', 120, 1]
+    ]],
+    ['Poliwrath', 'https://img.pokemondb.net/sprites/black-white/normal/poliwrath.png', 510, [
+        ['Hydro Pump', 'water', 110, 0.8],
+        ['Dynamic Punch', 'fighting', 100, 0.5],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Surf', 'water', 90, 1]
+    ]],
+    ['Alakazam', 'https://img.pokemondb.net/sprites/black-white/normal/alakazam.png', 500, [
+        ['Psychic', 'psychic', 90, 1],
+        ['Shadow Ball', 'ghost', 80, 1],
+        ['Dazzling Gleam', 'fairy', 80, 1],
+        ['Energy Ball', 'grass', 90, 1]
+    ]],
+    ['Machamp', 'https://img.pokemondb.net/sprites/black-white/normal/machamp.png', 505, [
+        ['Dynamic Punch', 'fighting', 100, 0.5],
+        ['Stone Edge', 'rock', 100, 0.8],
+        ['Earthquake', 'ground', 100, 1],
+        ['Bullet Punch', 'steel', 40, 1]
+    ]],
+    ['Victreebel', 'https://img.pokemondb.net/sprites/black-white/normal/victreebel.png', 490, [
+        ['Leaf Blade', 'grass', 90, 1],
+        ['Sludge Bomb', 'poison', 90, 1],
+        ['Sucker Punch', 'dark', 70, 1],
+        ['Acid Spray', 'poison', 40, 1]
+    ]],
+    ['Tentacruel', 'https://img.pokemondb.net/sprites/black-white/normal/tentacruel.png', 515, [
+        ['Hydro Pump', 'water', 110, 0.8],
+        ['Sludge Bomb', 'poison', 90, 1],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Giga Drain', 'grass', 75, 0.95]
+    ]],
+    ['Golem', 'https://img.pokemondb.net/sprites/black-white/normal/golem.png', 495, [
+        ['Earthquake', 'ground', 100, 1],
+        ['Stone Edge', 'rock', 100, 0.8],
+        ['Rock Slide', 'rock', 75, 0.9],
+        ['Thunder Punch', 'electric', 75, 1]
+    ]],
+    ['Rapidash', 'https://img.pokemondb.net/sprites/black-white/normal/rapidash.png', 500, [
+        ['Flare Blitz', 'fire', 120, 0.85],
+        ['Megahorn', 'bug', 120, 0.85],
+        ['Wild Charge', 'electric', 90, 1],
+        ['Drill Run', 'ground', 80, 0.95]
+    ]],
+    ['Slowbro', 'https://img.pokemondb.net/sprites/black-white/normal/slowbro.png', 490, [
+        ['Surf', 'water', 90, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Slack Off', 'normal', 0, 1]
+    ]],
+    ['Magneton', 'https://img.pokemondb.net/sprites/black-white/normal/magneton.png', 465, [
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Flash Cannon', 'steel', 80, 0.95],
+        ['Tri Attack', 'normal', 80, 1],
+        ['Magnet Bomb', 'steel', 60, 1]
+    ]],
+    ['Farfetch\'d', 'https://img.pokemondb.net/sprites/black-white/normal/farfetchd.png', 352, [
+        ['Brave Bird', 'flying', 120, 1],
+        ['Leaf Blade', 'grass', 90, 1],
+        ['Slash', 'normal', 70, 1],
+        ['Fury Cutter', 'bug', 40, 0.95]
+    ]],
+    ['Dewgong', 'https://img.pokemondb.net/sprites/black-white/normal/dewgong.png', 475, [
+        ['Surf', 'water', 90, 1],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Aqua Jet', 'water', 40, 1],
+        ['Signal Beam', 'bug', 75, 1]
+    ]],
+    ['Dodrio', 'https://img.pokemondb.net/sprites/black-white/normal/dodrio.png', 460, [
+        ['Brave Bird', 'flying', 120, 1],
+        ['Jump Kick', 'fighting', 100, 0.95],
+        ['Return', 'normal', 85, 1],
+        ['Quick Attack', 'normal', 40, 1]
+    ]],
+    ['Muk', 'https://img.pokemondb.net/sprites/black-white/normal/muk.png', 500, [
+        ['Gunk Shot', 'poison', 120, 0.8],
+        ['Shadow Punch', 'ghost', 60, 1],
+        ['Dark Pulse', 'dark', 80, 1],
+        ['Minimize', 'normal', 0, 1]
+    ]],
+    ['Cloyster', 'https://img.pokemondb.net/sprites/black-white/normal/cloyster.png', 525, [
+        ['Surf', 'water', 90, 1],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Razor Shell', 'water', 75, 0.95],
+        ['Explosion', 'normal', 250, 1]
+    ]],
+    ['Gengar', 'https://img.pokemondb.net/sprites/black-white/normal/gengar.png', 500, [
+        ['Shadow Ball', 'ghost', 80, 1],
+        ['Sludge Bomb', 'poison', 90, 1],
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Focus Blast', 'fighting', 120, 0.7]
+    ]],
+    ['Onix', 'https://img.pokemondb.net/sprites/black-white/normal/onix.png', 385, [
+        ['Earthquake', 'ground', 100, 1],
+        ['Stone Edge', 'rock', 100, 0.8],
+        ['Iron Tail', 'steel', 100, 0.75],
+        ['Rock Throw', 'rock', 50, 0.9]
+    ]],
+    ['Hypno', 'https://img.pokemondb.net/sprites/black-white/normal/hypno.png', 483, [
+        ['Psychic', 'psychic', 90, 1],
+        ['Shadow Ball', 'ghost', 80, 1],
+        ['Thunder Punch', 'electric', 75, 1],
+        ['Dream Eater', 'psychic', 100, 1]
+    ]],
+    ['Kingler', 'https://img.pokemondb.net/sprites/black-white/normal/kingler.png', 475, [
+        ['Crabhammer', 'water', 100, 0.9],
+        ['X-Scissor', 'bug', 80, 1],
+        ['Metal Claw', 'steel', 50, 0.95],
+        ['Harden', 'normal', 0, 1]
+    ]],
+    ['Electrode', 'https://img.pokemondb.net/sprites/black-white/normal/electrode.png', 480, [
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Discharge', 'electric', 80, 1],
+        ['Signal Beam', 'bug', 75, 1],
+        ['Light Screen', 'psychic', 0, 1]
+    ]],
+    ['Exeggutor', 'https://img.pokemondb.net/sprites/black-white/normal/exeggutor.png', 520, [
+        ['Solar Beam', 'grass', 120, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Sludge Bomb', 'poison', 90, 1],
+        ['Wood Hammer', 'grass', 120, 0.9]
+    ]],
+    ['Marowak', 'https://img.pokemondb.net/sprites/black-white/normal/marowak.png', 425, [
+        ['Earthquake', 'ground', 100, 1],
+        ['Bonemerang', 'ground', 50, 0.9],
+        ['Fire Punch', 'fire', 75, 1],
+        ['Brick Break', 'fighting', 75, 1]
+    ]],
+    ['Hitmonlee', 'https://img.pokemondb.net/sprites/black-white/normal/hitmonlee.png', 455, [
+        ['High Jump Kick', 'fighting', 130, 0.9],
+        ['Mega Kick', 'normal', 120, 0.75],
+        ['Blaze Kick', 'fire', 85, 0.9],
+        ['Focus Energy', 'normal', 0, 1]
+    ]],
+    ['Hitmonchan', 'https://img.pokemondb.net/sprites/black-white/normal/hitmonchan.png', 455, [
+        ['Mach Punch', 'fighting', 40, 1],
+        ['Ice Punch', 'ice', 75, 1],
+        ['Thunder Punch', 'electric', 75, 1],
+        ['Fire Punch', 'fire', 75, 1]
+    ]],
+    ['Lickitung', 'https://img.pokemondb.net/sprites/black-white/normal/lickitung.png', 385, [
+        ['Hyper Beam', 'normal', 150, 0.9],
+        ['Power Whip', 'grass', 120, 0.85],
+        ['Stomp', 'normal', 65, 1],
+        ['Slam', 'normal', 80, 0.75]
+    ]],
+    ['Weezing', 'https://img.pokemondb.net/sprites/black-white/normal/weezing.png', 490, [
+        ['Sludge Bomb', 'poison', 90, 1],
+        ['Dark Pulse', 'dark', 80, 1],
+        ['Fire Blast', 'fire', 110, 0.85],
+        ['Thunderbolt', 'electric', 90, 1]
+    ]],
+    ['Rhydon', 'https://img.pokemondb.net/sprites/black-white/normal/rhydon.png', 485, [
+        ['Earthquake', 'ground', 100, 1],
+        ['Stone Edge', 'rock', 100, 0.8],
+        ['Megahorn', 'bug', 120, 0.85],
+        ['Surf', 'water', 90, 1]
+    ]],
+    ['Chansey', 'https://img.pokemondb.net/sprites/black-white/normal/chansey.png', 450, [
+        ['Hyper Beam', 'normal', 150, 0.9],
+        ['Psychic', 'psychic', 90, 1],
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Soft-Boiled', 'normal', 0, 1]
+    ]],
+    ['Tangela', 'https://img.pokemondb.net/sprites/black-white/normal/tangela.png', 435, [
+        ['Vine Whip', 'grass', 45, 1],
+        ['Power Whip', 'grass', 120, 0.85],
+        ['Slam', 'normal', 80, 0.75],
+        ['Constrict', 'normal', 10, 1]
+    ]],
+    ['Kangaskhan', 'https://img.pokemondb.net/sprites/black-white/normal/kangaskhan.png', 490, [
+        ['Return', 'normal', 85, 1],
+        ['Sucker Punch', 'dark', 70, 1],
+        ['Earthquake', 'ground', 100, 1],
+        ['Outrage', 'dragon', 120, 1]
+    ]],
+    ['Seadra', 'https://img.pokemondb.net/sprites/black-white/normal/seadra.png', 440, [
+        ['Surf', 'water', 90, 1],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Dragon Pulse', 'dragon', 85, 1],
+        ['Focus Energy', 'normal', 0, 1]
+    ]],
+    ['Seaking', 'https://img.pokemondb.net/sprites/black-white/normal/seaking.png', 450, [
+        ['Surf', 'water', 90, 1],
+        ['Megahorn', 'bug', 120, 0.85],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Waterfall', 'water', 80, 1]
+    ]],
+    ['Starmie', 'https://img.pokemondb.net/sprites/black-white/normal/starmie.png', 520, [
+        ['Surf', 'water', 90, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Ice Beam', 'ice', 90, 1]
+    ]],
+    ['Mr. Mime', 'https://img.pokemondb.net/sprites/black-white/normal/mr-mime.png', 460, [
+        ['Psychic', 'psychic', 90, 1],
+        ['Dazzling Gleam', 'fairy', 80, 1],
+        ['Shadow Ball', 'ghost', 80, 1],
+        ['Barrier', 'psychic', 0, 1]
+    ]],
+    ['Scyther', 'https://img.pokemondb.net/sprites/black-white/normal/scyther.png', 500, [
+        ['X-Scissor', 'bug', 80, 1],
+        ['Aerial Ace', 'flying', 60, 1],
+        ['Night Slash', 'dark', 70, 1],
+        ['Brick Break', 'fighting', 75, 1]
+    ]],
+    ['Jynx', 'https://img.pokemondb.net/sprites/black-white/normal/jynx.png', 455, [
+        ['Ice Beam', 'ice', 90, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Focus Blast', 'fighting', 120, 0.7],
+        ['Draining Kiss', 'fairy', 50, 1]
+    ]],
+    ['Electabuzz', 'https://img.pokemondb.net/sprites/black-white/normal/electabuzz.png', 490, [
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Focus Blast', 'fighting', 120, 0.7],
+        ['Thunder Punch', 'electric', 75, 1]
+    ]],
+    ['Magmar', 'https://img.pokemondb.net/sprites/black-white/normal/magmar.png', 495, [
+        ['Fire Blast', 'fire', 110, 0.85],
+        ['Thunder Punch', 'electric', 75, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Mach Punch', 'fighting', 40, 1]
+    ]],
+    ['Pinsir', 'https://img.pokemondb.net/sprites/black-white/normal/pinsir.png', 500, [
+        ['X-Scissor', 'bug', 80, 1],
+        ['Brick Break', 'fighting', 75, 1],
+        ['Earthquake', 'ground', 100, 1],
+        ['Stone Edge', 'rock', 100, 0.8]
+    ]],
+    ['Tauros', 'https://img.pokemondb.net/sprites/black-white/normal/tauros.png', 490, [
+        ['Earthquake', 'ground', 100, 1],
+        ['Double-Edge', 'normal', 120, 1],
+        ['Zen Headbutt', 'psychic', 80, 0.9],
+        ['Rock Slide', 'rock', 75, 0.9]
+    ]],
+    ['Gyarados', 'https://img.pokemondb.net/sprites/black-white/normal/gyarados.png', 540, [
+        ['Waterfall', 'water', 80, 1],
+        ['Dragon Dance', 'dragon', 0, 1],
+        ['Ice Fang', 'ice', 65, 0.95],
+        ['Earthquake', 'ground', 100, 1]
+    ]],
+    ['Lapras', 'https://img.pokemondb.net/sprites/black-white/normal/lapras.png', 535, [
+        ['Surf', 'water', 90, 1],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Thunderbolt', 'electric', 90, 1]
+    ]],
+    ['Vaporeon', 'https://img.pokemondb.net/sprites/black-white/normal/vaporeon.png', 525, [
+        ['Surf', 'water', 90, 1],
+        ['Hydro Pump', 'water', 110, 0.8],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Aqua Ring', 'water', 0, 1]
+    ]],
+    ['Eevee', 'https://img.pokemondb.net/sprites/black-white/normal/eevee.png', 325, [
+        ['Quick Attack', 'normal', 40, 1],
+        ['Swift', 'normal', 60, 1],
+        ['Shadow Ball', 'ghost', 80, 1],
+        ['Double-Edge', 'normal', 120, 1]
+    ]],
+    ['Flareon', 'https://img.pokemondb.net/sprites/black-white/normal/flareon.png', 525, [
+        ['Flamethrower', 'fire', 95, 1],
+        ['Fire Blast', 'fire', 110, 0.85],
+        ['Giga Impact', 'normal', 150, 0.9],
+        ['Quick Attack', 'normal', 40, 1]
+    ]],
+    ['Jolteon', 'https://img.pokemondb.net/sprites/black-white/normal/jolteon.png', 525, [
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Discharge', 'electric', 80, 1],
+        ['Shadow Ball', 'ghost', 80, 1],
+        ['Signal Beam', 'bug', 75, 1]
+    ]],
+    ['Porygon', 'https://img.pokemondb.net/sprites/black-white/normal/porygon.png', 395, [
+        ['Tri Attack', 'normal', 80, 1],
+        ['Psychic', 'psychic', 90, 1],
+        ['Shadow Ball', 'ghost', 80, 1],
+        ['Hyper Beam', 'normal', 150, 0.9]
+    ]],
+    ['Omastar', 'https://img.pokemondb.net/sprites/black-white/normal/omastar.png', 495, [
+        ['Hydro Pump', 'water', 110, 0.8],
+        ['Rock Slide', 'rock', 75, 0.9],
+        ['Ice Beam', 'ice', 90, 1],
+        ['Earth Power', 'ground', 90, 1]
+    ]],
+    ['Kabutops', 'https://img.pokemondb.net/sprites/black-white/normal/kabutops.png', 495, [
+        ['Waterfall', 'water', 80, 1],
+        ['Stone Edge', 'rock', 100, 0.8],
+        ['X-Scissor', 'bug', 80, 1],
+        ['Aqua Jet', 'water', 40, 1]
+    ]],
+    ['Aerodactyl', 'https://img.pokemondb.net/sprites/black-white/normal/aerodactyl.png', 515, [
+        ['Rock Slide', 'rock', 75, 0.9],
+        ['Aerial Ace', 'flying', 60, 1],
+        ['Earthquake', 'ground', 100, 1],
+        ['Crunch', 'dark', 80, 0.95]
+    ]],
+    ['Snorlax', 'https://img.pokemondb.net/sprites/black-white/normal/snorlax.png', 540, [
+        ['Hyper Beam', 'normal', 150, 0.9],
+        ['Body Slam', 'normal', 85, 1],
+        ['Crunch', 'dark', 80, 0.95],
+        ['Earthquake', 'ground', 100, 1]
+    ]],
+    ['Articuno', 'https://img.pokemondb.net/sprites/black-white/normal/articuno.png', 580, [
+        ['Ice Beam', 'ice', 90, 1],
+        ['Blizzard', 'ice', 110, 0.7],
+        ['Hurricane', 'flying', 110, 0.7],
+        ['Roost', 'flying', 0, 1]
+    ]],
+    ['Moltres', 'https://img.pokemondb.net/sprites/black-white/normal/moltres.png', 580, [
+        ['Flamethrower', 'fire', 95, 1],
+        ['Fire Blast', 'fire', 110, 0.85],
+        ['Hurricane', 'flying', 110, 0.7],
+        ['Roost', 'flying', 0, 1]
+    ]],
+    ['Zapdos', 'https://img.pokemondb.net/sprites/black-white/normal/zapdos.png', 580, [
+        ['Thunderbolt', 'electric', 90, 1],
+        ['Discharge', 'electric', 80, 1],
+        ['Hurricane', 'flying', 110, 0.7],
+        ['Roost', 'flying', 0, 1]
+    ]]
+        ];
+
+        // Tabela de correspondência de tipos de movimentos contra tipos de Pokémon
+        let typeMatch = {
+            'Charizard': [
+                ['ground'],
+                ['water', 'rock', 'electric'],
+                ['fire', 'grass', 'steel', 'fighting', 'fairy', 'bug']
+            ],
+            'Blastoise': [
+                [''],
+                ['grass', 'electric'],
+                ['fire', 'water', 'steel']
+            ],
+            'Venusaur': [
+                [''],
+                ['fire', 'flying', 'ice', 'psychic'],
+                ['grass', 'water', 'electric', 'fighting', 'fairy']
+            ],
+            'Butterfree': [
+        ['ground'],
+        ['fire', 'electric', 'ice', 'flying', 'rock'],
+        ['grass', 'fighting', 'bug']
+    ],
+    'Beedrill': [
+        [''],
+        ['fire', 'flying', 'psychic', 'rock'],
+        ['bug', 'grass', 'fighting', 'fairy', 'poison']
+    ],
+    'Pidgeot': [
+        ['ground', 'ghost'],
+        ['electric', 'ice', 'rock'],
+        ['bug', 'grass']
+    ],
+    'Raticate': [
+        ['ground', 'fighting'],
+        ['normal'],
+        ['ghost']
+    ],
+    'Fearow': [
+        ['ghost'],
+        ['fighting'],
+        ['']
+    ],
+    'Arbok': [
+        [''],
+        ['ground', 'psychic'],
+        ['grass', 'bug', 'fighting', 'poison', 'fairy']
+    ],
+    'Pikachu': [
+        [''],
+        ['ground'],
+        ['flying', 'steel', 'electric']
+    ],
+    'Raichu': [
+        [''],
+        ['ground'],
+        ['flying', 'steel', 'electric']
+    ],
+    'Sandslash': [
+        ['electric'],
+        ['water', 'grass', 'ice'],
+        ['poison', 'rock']
+    ],
+    'Nidoqueen': [
+        ['electric'],
+        ['water', 'ice', 'ground', 'psychic'],
+        ['fighting', 'poison', 'bug', 'rock', 'fairy']
+    ],
+    'Nidoking': [
+        ['electric'],
+        ['water', 'ice', 'ground', 'psychic'],
+        ['fighting', 'poison', 'bug', 'rock', 'fairy']
+    ],
+    'Clefable': [
+        ['dragon'],
+        ['steel', 'poison'],
+        ['fighting', 'bug', 'dark']
+    ],
+    'Ninetales': [
+        [''],
+        ['water', 'ground', 'rock'],
+        ['grass', 'ice', 'bug', 'steel', 'fairy']
+    ],
+    'Wigglytuff': [
+        ['ghost', 'dragon'],
+        ['steel', 'poison'],
+        ['bug', 'dark']
+    ],
+    'Golbat': [
+        ['ground'],
+        ['electric', 'ice', 'psychic', 'rock'],
+        ['bug', 'grass', 'fighting', 'poison', 'fairy']
+    ],
+    'Vileplume': [
+        [''],
+        ['fire', 'ice', 'flying', 'psychic'],
+        ['ground', 'water', 'electric', 'fighting', 'fairy']
+    ],
+    'Parasect': [
+        ['fire', 'flying', 'rock'],
+        ['bug', 'grass'],
+        ['poison']
+    ],
+    'Venomoth': [
+        ['electric', 'rock'],
+        ['bug', 'poison', 'flying'],
+        ['fighting', 'ground']
+    ],
+    'Persian': [
+        ['fighting'],
+        ['normal'],
+        ['ghost']
+    ],
+    'Dugtrio': [
+        ['water', 'grass', 'ice'],
+        ['ground'],
+        ['poison', 'rock']
+    ],
+    'Golduck': [
+        ['electric', 'grass'],
+        ['water'],
+        ['steel', 'fire', 'ice']
+    ],
+    'Primeape': [
+        ['psychic', 'flying', 'fairy'],
+        ['fighting'],
+        ['rock', 'bug', 'dark']
+    ],
+    'Arcanine': [
+        ['water', 'rock'],
+        ['fire'],
+        ['steel', 'bug', 'grass', 'ice']
+    ],
+    'Poliwrath': [
+        ['electric', 'grass', 'flying', 'psychic'],
+        ['water', 'ice', 'fighting'],
+        ['poison']
+    ],
+    'Alakazam': [
+        ['bug', 'ghost', 'dark'],
+        ['psychic'],
+        ['fighting']
+    ],
+    'Machamp': [
+        ['psychic', 'flying', 'fairy'],
+        ['fighting'],
+        ['rock', 'bug', 'dark']
+    ],
+    'Victreebel': [
+        ['electric', 'rock'],
+        ['grass', 'poison'],
+        ['ground', 'psychic']
+    ],
+    'Tentacruel': [
+        ['electric', 'ground', 'psychic'],
+        ['water', 'poison'],
+        ['fighting']
+    ],
+    'Golem': [
+        ['water', 'grass', 'ice', 'fighting', 'ground', 'steel'],
+        ['rock', 'electric'],
+        ['poison']
+    ],
+    'Rapidash': [
+        ['water', 'ground', 'rock'],
+        ['fire'],
+        ['steel', 'bug', 'grass', 'ice']
+    ],
+    'Slowbro': [
+        ['electric', 'grass', 'bug', 'dark', 'ghost'],
+        ['water', 'psychic'],
+        ['fighting']
+    ],
+    'Magneton': [
+        ['ground', 'fire'],
+        ['electric', 'steel'],
+        ['ice']
+    ],
+    'Farfetch\'d': [
+        ['electric', 'rock'],
+        ['normal', 'fighting'],
+        ['ghost', 'dark']
+    ],
+    'Dewgong': [
+        ['electric', 'grass', 'fighting', 'rock'],
+        ['water', 'ice'],
+        ['poison']
+    ],
+    'Dodrio': [
+        ['electric', 'rock'],
+        ['normal', 'flying'],
+        ['ghost', 'dark']
+    ],
+    'Muk': [
+        ['ground', 'psychic'],
+        ['poison', 'dark'],
+        ['fighting']
+    ],
+    'Cloyster': [
+        ['electric', 'grass', 'fighting', 'rock'],
+        ['water', 'ice'],
+        ['poison']
+    ],
+    'Gengar': [
+        ['normal', 'fighting'],
+        ['ghost', 'poison'],
+        ['psychic', 'dark']
+    ],
+    'Onix': [
+        ['water', 'grass', 'ice', 'fighting', 'ground', 'steel'],
+        ['rock'],
+        ['electric', 'psychic']
+    ],
+    'Hypno': [
+        ['dark'],
+        ['psychic'],
+        ['fighting']
+    ],
+    'Kingler': [
+        ['electric', 'grass'],
+        ['water'],
+        ['steel', 'fire', 'ice']
+    ],
+    'Electrode': [
+        ['ground'],
+        ['electric'],
+        ['flying', 'steel']
+    ],
+    'Exeggutor': [
+        ['ice', 'dragon'],
+        ['grass', 'psychic'],
+        ['fire', 'bug', 'poison', 'flying']
+    ],
+    'Marowak': [
+        ['water', 'grass', 'ice'],
+        ['ground'],
+        ['poison', 'rock']
+    ],
+    'Hitmonlee': [
+        ['psychic', 'flying', 'fairy'],
+        ['fighting'],
+        ['rock', 'bug', 'dark']
+    ],
+    'Hitmonchan': [
+        ['psychic', 'flying', 'fairy'],
+        ['fighting'],
+        ['rock', 'bug', 'dark']
+    ],
+    'Lickitung': [
+        ['electric', 'rock'],
+        ['normal'],
+        ['ghost', 'dark']
+    ],
+    'Weezing': [
+        ['ground'],
+        ['poison'],
+        ['psychic']
+    ],
+    'Rhydon': [
+        ['water', 'grass', 'ice', 'fighting', 'ground', 'steel'],
+        ['ground', 'rock'],
+        ['fire', 'electric']
+    ],
+    'Chansey': [
+        ['fighting'],
+        ['normal'],
+        ['ghost', 'dark']
+    ],
+    'Tangela': [
+        ['fire', 'flying', 'poison', 'bug'],
+        ['grass'],
+        ['ground']
+    ],
+    'Kangaskhan': [
+        ['electric'],
+        ['normal'],
+        ['ghost', 'dark']
+    ],
+    'Seadra': [
+        ['electric', 'grass'],
+        ['water'],
+        ['steel', 'fire', 'ice']
+    ],
+    'Seaking': [
+        ['electric', 'grass'],
+        ['water'],
+        ['steel', 'fire', 'ice']
+    ],
+    'Starmie': [
+        ['electric', 'grass', 'fighting', 'bug', 'dark'],
+        ['water', 'psychic'],
+        ['ghost']
+    ],
+    'Mr. Mime': [
+        ['electric', 'rock'],
+        ['psychic', 'fairy'],
+        ['bug', 'ghost', 'dark']
+    ],
+    'Scyther': [
+        ['electric', 'rock'],
+        ['bug', 'flying'],
+        ['fighting', 'ground']
+    ],
+    'Jynx': [
+        ['electric', 'rock', 'steel'],
+        ['ice', 'psychic'],
+        ['bug', 'dark', 'ghost']
+    ],
+    'Electabuzz': [
+        ['ground'],
+        ['electric'],
+        ['flying', 'steel']
+    ],
+    'Magmar': [
+        ['water', 'rock', 'fire'],
+        ['fire'],
+        ['bug', 'grass', 'ice', 'steel']
+    ],
+    'Pinsir': [
+        ['electric', 'rock'],
+        ['bug'],
+        ['fighting', 'ground', 'grass']
+    ],
+    'Tauros': [
+        ['electric', 'rock'],
+        ['normal'],
+        ['ghost', 'dark']
+    ],
+    'Gyarados': [
+        ['electric'],
+        ['water', 'flying'],
+        ['steel']
+    ],
+    'Lapras': [
+        ['electric', 'grass', 'fighting', 'rock'],
+        ['water', 'ice'],
+        ['poison']
+    ],
+    'Vaporeon': [
+        ['electric'],
+        ['water'],
+        ['steel']
+    ],
+    'Eevee': [
+        ['electric'],
+        ['normal'],
+        ['ghost', 'dark']
+    ],
+    'Flareon': [
+        ['water', 'rock'],
+        ['fire'],
+        ['bug', 'grass', 'ice']
+    ],
+    'Jolteon': [
+        ['ground'],
+        ['electric'],
+        ['flying', 'steel']
+    ],
+    'Porygon': [
+        ['electric'],
+        ['normal'],
+        ['ghost', 'dark']
+    ],
+    'Omastar': [
+        ['water', 'ice'],
+        ['rock', 'water'],
+        ['electric', 'grass', 'fighting', 'ground']
+    ],
+    'Kabutops': [
+        ['water', 'ice'],
+        ['rock', 'water'],
+        ['electric', 'grass', 'fighting', 'ground']
+    ],
+    'Aerodactyl': [
+        ['electric', 'ice', 'rock', 'steel'],
+        ['rock', 'flying'],
+        ['fighting', 'ground']
+    ],
+    'Snorlax': [
+        ['fighting'],
+        ['normal'],
+        ['ghost', 'dark']
+    ],
+    'Articuno': [
+        ['electric', 'rock', 'steel'],
+        ['ice', 'flying'],
+        ['fighting', 'ground']
+    ],
+    'Moltres': [
+        ['electric', 'rock'],
+        ['fire', 'flying'],
+        ['bug', 'grass', 'ice', 'steel']
+    ],
+    'Zapdos': [
+        ['ground'],
+        ['electric', 'flying'],
+        ['steel']
+    ]
+}
+        
+
+        // Função para criar um Pokémon com base na lista de Pokémon disponíveis
+        function spawn(bool) {
+            let p = pkmList[Math.floor(Math.random() * pkmList.length)];
+            let pkm = new Pokemon(p[0], p[1], p[2], p[3]);
+
+            if (bool) {
+                // Preenche os botões com os nomes dos movimentos do Pokémon 1
+                for (let i = 0; i < 4; i++) {
+                    document.getElementById('m' + i).value = pkm.moves[i][0];
+                }
+            }
+            return pkm;
+        }
+
+        // Inicialização dos Pokémon e exibição de suas imagens e HP
+        let pk1 = spawn(true);
+        let s1 = document.createElement('img');
+        s1.src = pk1.sprite;
+        document.getElementById('pk1').appendChild(s1);
+        document.getElementById('hp1').innerHTML = '<p>HP: ' + pk1.hp + '/' + pk1.fullhp + '</p>';
+        document.getElementById('name1').textContent = pk1.name; // Adiciona esta linha para mostrar o nome do Pokémon 1
+
+
+        let pk2 = spawn(false);
+        let s2 = document.createElement('img');
+        s2.src = pk2.sprite;
+        document.getElementById('pk2').appendChild(s2);
+        document.getElementById('hp2').innerHTML = '<p>HP: ' + pk2.hp + '/' + pk2.fullhp + '</p>';
+        document.getElementById('name2').textContent = pk2.name; // Adiciona esta linha para mostrar o nome do Pokémon 2
+
+        // Adiciona eventos de clique aos botões de movimento
+        for (let i = 0; i < 4; i++) {
+            let btn = document.getElementById('m' + i);
+            let move = pk1.moves[i];
+
+            function addHandler(btn, move, pk1, pk2) {
+                btn.addEventListener('click', function(e) {
+                    attack(move, pk1, pk2, 'hp2', '');
+                    setTimeout(attack, 2000, pk2.moves[Math.floor(Math.random() * 3)], pk2, pk1, 'hp1', 'Foe ');
+                });
+            }
+            addHandler(btn, move, pk1, pk2);
+        }
+
+        // Função para realizar um ataque e atualizar as informações de batalha
+        function attack(move, attacker, receiver, hp, owner) {
+            document.getElementById('comment').innerHTML = '<p>' + owner + attacker.name + ' used ' + move[0] + '!</p>';
+            if (Math.random() < move[3]) {
+                let power = move[2] += Math.floor(Math.random() * 10);
+                let rtype = typeMatch[receiver.name];
+                let mtype = move[1];
+                let scale = 1;
+
+                for (let i = 0; i < rtype.length; i++) {
+                    if (rtype[i].includes(mtype)) {
+                        switch (i) {
+                            case 0:
+                                scale = 0;
+                                setTimeout(function() {
+                                    document.getElementById('comment').innerHTML = '<p>It had no effect!</p>';
+                                }, 1000);
+                                break;
+                            case 1:
+                                scale = 2;
+                                setTimeout(function() {
+                                    document.getElementById('comment').innerHTML = '<p>It was super effective!</p>';
+                                }, 1000);
+                                break;
+                            case 2:
+                                scale = 0.5;
+                                setTimeout(function() {
+                                    document.getElementById('comment').innerHTML = '<p>It was not very effective!</p>';
+                                }, 1000);
+                                break;
+                        }
+                        break;
+                    }
+                }
+                power *= scale;
+                receiver.hp -= Math.floor(power);
+                document.getElementById(hp).innerHTML = '<p>HP: ' + receiver.hp + '/' + receiver.fullhp + '</p>';
+            } else {
+                setTimeout(function() {
+                    document.getElementById('comment').innerHTML = '<p>Attack missed!</p>';
+                });
+            }
+            checkWinner(hp);
+        }
+
+        // Função para verificar se há um vencedor na batalha
+        function checkWinner(hp) {
+            let f = (pk1.hp <= 0) ? pk1 : (pk2.hp <= 0) ? pk2 : false;
+            if (f != false) {
+                alert('GAME OVER: ' + f.name + ' fainted!');
+                document.getElementById(hp).innerHTML = '<p>HP: 0/' + f.fullhp + '</p>';
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>
